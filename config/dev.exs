@@ -17,7 +17,7 @@ config :dnd_matchmaker, DndMatchmaker.Repo,
 # with webpack to recompile .js and .css sources.
 config :dnd_matchmaker, DndMatchmakerWeb.Endpoint,
   http: [port: 4000],
-  debug_errors: true,
+  debug_errors: false,
   code_reloader: true,
   check_origin: false,
   watchers: []
