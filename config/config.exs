@@ -14,8 +14,7 @@ config :dnd_matchmaker,
 config :dnd_matchmaker, DndMatchmakerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "OKHGrMhk6GuoeckBdmUjy49UFVNS8+s7btez5cv0TeS0L+JgrbStE++xxQxWNHGx",
-  render_errors: [view: DndMatchmakerWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: DndMatchmaker.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: DndMatchmakerWeb.ErrorView, accepts: ~w(json)]
 
 # Configures Elixir's Logger
 config :logger, :console,
