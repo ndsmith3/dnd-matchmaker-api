@@ -6,7 +6,6 @@ defmodule DndMatchmaker.Repo.Migrations.CreateUsers do
       add :email, :string
       add :username, :string
       add :password, :string
-      add :password_salt, :string
 
       timestamps()
     end

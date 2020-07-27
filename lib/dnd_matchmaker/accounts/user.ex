@@ -5,7 +5,6 @@ defmodule DndMatchmaker.Accounts.User do
   schema "users" do
     field :email, :string
     field :password, :string
-    field :password_salt, :string
     field :username, :string
 
     timestamps()
@@ -13,12 +12,9 @@ defmodule DndMatchmaker.Accounts.User do
 
   @doc false
   def changeset(user, attrs) do
-    with salt <- Bcrypt.gen_salt() do
-      user
-      |> cast(attrs, [:email, :username, :password])
-      |> put_change(:password_salt, salt)
-      |> validate_required([:email, :username, :password, :password_salt])
-      |> update_change(:password, &(Bcrypt.Base.hash_password(&1, salt)))
-    end
+    user
+    |> cast(attrs, [:email, :username, :password])
+    |> validate_required([:email, :username, :password])
+    |> update_change(:password, &(Bcrypt.hash_pwd_salt(&1)))
   end
 end
