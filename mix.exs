@@ -41,7 +41,8 @@ defmodule DndMatchmaker.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
-      {:cowboy, "< 2.8.0", override: true}
+      {:cowboy, "< 2.8.0", override: true},
+      {:junit_formatter, "~> 3.1", only: [:test]}
     ]
   end
 
