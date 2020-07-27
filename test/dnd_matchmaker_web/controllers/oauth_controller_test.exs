@@ -12,7 +12,7 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
   end
 
   test "authorize renders bad_request when using unavailable grant_type", %{conn: conn} do
-    conn = conn |> post(@auth, %{
+    conn = post(conn, @auth, %{
       "grant_type" => "not a grant type"
     })
     assert conn.status == 400
@@ -21,7 +21,7 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
 
   describe "password grant" do
     test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn} do
-      conn = conn |> post(@auth, %{
+      conn = post(conn, @auth, %{
         "grant_type" => "password",
         "username" => "bob",
         "password" => "not the password"
@@ -31,13 +31,15 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
     end
 
     test "authorize rendors bearer token when given valid user/pass", %{conn: conn} do
-      conn = conn |> post(@auth, %{
+      conn = post(conn, @auth, %{
         "grant_type" => "password",
         "username" => "bob",
         "password" => "password"
       })
       assert conn.status == 200
-      assert Jason.decode!(conn.resp_body)["authorization_token"] =~ ~r/(.*)\.(.*)\.(.*)/
+      assert {:ok, claims} = DndMatchmakerWeb.JWT.verify_and_validate(Jason.decode!(conn.resp_body)["authorization_token"])
+      assert claims["sub"] == 1
+      assert claims["username"] == "bob"
     end
   end
 end

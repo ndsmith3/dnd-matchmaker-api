@@ -11,7 +11,7 @@ defmodule DndMatchmakerWeb.OAuthController do
 
   defp get_token(%{"grant_type" => "password", "username" => username, "password" => password}) do
     if username == "bob" && password == "password" do
-      info = %{"sub" => "bob"}
+      info = %{"sub" => 1, "username" => "bob"}
       token = DndMatchmakerWeb.JWT.generate_and_sign!(info)
       {:ok, token}
     else

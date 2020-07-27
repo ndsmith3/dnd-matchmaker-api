@@ -1,14 +1,20 @@
 defmodule DndMatchmakerWeb.ErrorView do
   use DndMatchmakerWeb, :view
 
-  def render("400.json", assigns) do
-    message = assigns |> Map.get(:message, :bad_request)
+  def render("400.json", %{message: message}) do
     %{error: %{message: message}}
   end
 
-  def render("401.json", assigns) do
-    message = assigns |> Map.get(:message, :unauthorized)
+  def render("400.json", _assigns) do
+    %{error: %{message: :bad_request}}
+  end
+
+  def render("401.json", %{message: message}) do
     %{error: %{message: message}}
+  end
+
+  def render("401.json", _assigns) do
+    %{error: %{message: :unauthorized}}
   end
 
   def render("403.json", _assigns) do

@@ -5,6 +5,7 @@ defmodule DndMatchmakerWeb.OAuthViewTest do
   import Phoenix.View
 
   test "renders authorize.json" do
-    assert render(DndMatchmakerWeb.OAuthView, "authorize.json", token: "token") == %{authorization_token: "token"}
+    assert render(DndMatchmakerWeb.OAuthView, "authorize.json", token: "token")
+      == %{token_type: "bearer", authorization_token: "token"}
   end
 end

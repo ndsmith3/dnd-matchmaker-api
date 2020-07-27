@@ -14,4 +14,11 @@ defmodule DndMatchmakerWeb.FallbackController do
     |> put_view(DndMatchmakerWeb.ErrorView)
     |> render(:"401", message: msg)
   end
+
+  def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
+    conn
+    |> put_status(422)
+    |> put_view(DndMatchmakerWeb.ChangesetView)
+    |> render("error.json", changeset: changeset)
+  end
 end
