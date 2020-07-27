@@ -5,7 +5,7 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
 
   @endpoint DndMatchmakerWeb.Endpoint
 
-  @auth "/oauth/auth"
+  @auth "/oauth/token"
 
   setup do
     assert :ok = Ecto.Adapters.SQL.Sandbox.checkout(DndMatchmaker.Repo)

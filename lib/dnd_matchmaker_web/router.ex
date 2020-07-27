@@ -28,6 +28,6 @@ defmodule DndMatchmakerWeb.Router do
 
   scope "/oauth", DndMatchmakerWeb do
     pipe_through :api
-    post "/auth", OAuthController, :authorize
+    post "/token", OAuthController, :authorize
   end
 end
