@@ -34,7 +34,8 @@ defmodule DndMatchmakerWeb.UserControllerTest do
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
       conn = post(conn, "/api/v1/register", %{user: @create_attrs})
-      assert id = json_response(conn, 201)["user_id"]
+      resp = json_response(conn, 201)["data"]
+      assert resp["id"] != nil
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

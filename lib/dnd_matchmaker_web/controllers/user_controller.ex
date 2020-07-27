@@ -10,13 +10,14 @@ defmodule DndMatchmakerWeb.UserController do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn
       |> put_status(:created)
-      |> render("register.json", user: user)
+      |> render("show.json", user: user)
     end
   end
 
   def show(conn, _opts) do
-    user = Accounts.get_user!(conn.private[:user_id])
-    render(conn, "show.json", user: user)
+    with user <- Accounts.get_user!(conn.private[:user_id]) do
+      render(conn, "show.json", user: user)
+    end
   end
 
   def update(conn, %{"user" => user_params}) do
