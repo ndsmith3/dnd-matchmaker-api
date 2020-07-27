@@ -38,6 +38,22 @@ defmodule DndMatchmaker.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a single user by username.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user!("alice")
+      %User{}
+
+      iex> get_user!("bob")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_by_username!(username), do: Repo.get_by!(User, [username: username])
+
+  @doc """
   Creates a user.
 
   ## Examples

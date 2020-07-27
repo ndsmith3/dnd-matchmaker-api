@@ -29,12 +29,17 @@ defmodule DndMatchmaker.AccountsTest do
       assert Accounts.get_user!(user.id) == user
     end
 
+    test "get_user_by_username!/1 returns the user with given username" do
+      user = user_fixture()
+      assert Accounts.get_user_by_username!(user.username) == user
+    end
+
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
       assert user.email == "some email"
       assert user.password != nil
       assert user.password_salt != nil
-      assert Bcrypt.verify_pass(@valid_attrs[:password], user.password)
+      assert Bcrypt.Base.hash_password(@valid_attrs[:password], user.password_salt) == user.password
       assert user.username == "some username"
     end
 
@@ -48,7 +53,7 @@ defmodule DndMatchmaker.AccountsTest do
       assert user.email == "some updated email"
       assert user.password != nil
       assert user.password_salt != nil
-      assert Bcrypt.verify_pass(@update_attrs[:password], user.password)
+      assert Bcrypt.Base.hash_password(@update_attrs[:password], user.password_salt) == user.password
       assert user.username == "some updated username"
     end
 

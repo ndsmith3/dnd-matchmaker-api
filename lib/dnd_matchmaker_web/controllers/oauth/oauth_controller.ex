@@ -10,12 +10,14 @@ defmodule DndMatchmakerWeb.OAuthController do
   end
 
   defp get_token(%{"grant_type" => "password", "username" => username, "password" => password}) do
-    if username == "bob" && password == "password" do
-      info = %{"sub" => 1, "username" => "bob"}
-      token = DndMatchmakerWeb.JWT.generate_and_sign!(info)
-      {:ok, token}
-    else
-      {:error, :unauthorized, :no_username_or_pass_match}
+    with user <- DndMatchmaker.Accounts.get_user_by_username!(username) do
+      if Bcrypt.Base.hash_password(password, user.password_salt) == user.password do
+        info = %{"sub" => user.id, "username" => user.username}
+        token = DndMatchmakerWeb.JWT.generate_and_sign!(info)
+        {:ok, token}
+      else
+        {:error, :unauthorized, :no_username_or_pass_match}
+      end
     end
   end
 

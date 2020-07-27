@@ -8,6 +8,7 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
   @auth "/oauth/auth"
 
   setup do
+    assert :ok = Ecto.Adapters.SQL.Sandbox.checkout(DndMatchmaker.Repo)
     %{conn: build_conn()}
   end
 
@@ -20,26 +21,33 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
   end
 
   describe "password grant" do
-    test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn} do
+    setup [:create_user]
+
+    test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn, user: user} do
       conn = post(conn, @auth, %{
         "grant_type" => "password",
-        "username" => "bob",
+        "username" => user.username,
         "password" => "not the password"
       })
       assert conn.status == 401
       assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :no_username_or_pass_match}}
     end
 
-    test "authorize rendors bearer token when given valid user/pass", %{conn: conn} do
+    test "authorize rendors bearer token when given valid user/pass", %{conn: conn, user: user} do
       conn = post(conn, @auth, %{
         "grant_type" => "password",
-        "username" => "bob",
+        "username" => user.username,
         "password" => "password"
       })
       assert conn.status == 200
       assert {:ok, claims} = DndMatchmakerWeb.JWT.verify_and_validate(Jason.decode!(conn.resp_body)["authorization_token"])
-      assert claims["sub"] == 1
-      assert claims["username"] == "bob"
+      assert claims["sub"] == user.id
+      assert claims["username"] == user.username
     end
+  end
+
+  defp create_user(_) do
+    {:ok, user} = DndMatchmaker.Accounts.create_user(%{username: "bob", email: "bob@aol.com", password: "password"})
+    %{user: user}
   end
 end
