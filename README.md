@@ -1,4 +1,5 @@
 # DndMatchmaker
+[![CircleCI](https://circleci.com/gh/ndsmith3/dnd-matchmaker-api.svg?style=svg)](https://circleci.com/gh/ndsmith3/dnd-matchmaker-api)
 
 To start your Phoenix server:
 
