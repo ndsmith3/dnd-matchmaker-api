@@ -1,0 +1,35 @@
+# Elixir CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-elixir/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/elixir:1.7 # base image
+        environment:  # environment variables for primary container
+          MIX_ENV: test
+      - image: circleci/postgres:10.1-alpine  # database image
+        environment:  # environment variables for database
+          POSTGRES_USER: postgres
+          POSTGRES_DB: dnd_matchmaker_test
+          POSTGRES_PASSWORD:
+    resource_class: small
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      # specify any bash command here prefixed with `run: `
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+
+      - run: mix do deps.get, compile
+
+      - run:  # special utility that stalls main process until DB is ready
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+        
+      - run: mix test
+
+      - store_test_results:  # upload junit test results for display in Test Summary
+          path: _build/test/lib/dnd_matchmaker # Replace with the name of your :app
