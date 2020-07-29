@@ -33,7 +33,7 @@ defmodule DndMatchmaker.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.0"},
+      {:phoenix, "~> 1.5.4"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.1"},
@@ -42,7 +42,9 @@ defmodule DndMatchmaker.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
       {:cowboy, "< 2.8.0", override: true},
-      {:junit_formatter, "~> 3.1", only: [:test]}
+      {:junit_formatter, "~> 3.1", only: [:test]},
+      {:joken, "~> 2.0"},
+      {:bcrypt_elixir, "~> 2.0"}
     ]
   end
 

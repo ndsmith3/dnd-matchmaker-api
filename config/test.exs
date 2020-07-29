@@ -16,3 +16,6 @@ config :dnd_matchmaker, DndMatchmakerWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :joken, default_signer: "test"
+config :bcrypt_elixir, log_rounds: 4
