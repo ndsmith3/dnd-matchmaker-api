@@ -5,10 +5,29 @@ defmodule DndMatchmakerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", DndMatchmakerWeb do
+  pipeline :auth do
+    plug DndMatchmakerWeb.Plugs.AuthorizationPlug
+  end
+
+  scope "/api/v:version", DndMatchmakerWeb do
     pipe_through :api
     # Temporary endpoint for testing connectivity to front-end
-    get "/test", TestController, :show
-    get "/test/:data", TestController, :reflect
+    get    "/test",       TestController, :show
+    get    "/test/:data", TestController, :reflect
+    post   "/register",   UserController, :register
+  end
+
+  scope "/api/v:version", DndMatchmakerWeb do
+    pipe_through :api
+    pipe_through :auth
+
+    get    "/user", UserController, :show
+    put    "/user", UserController, :update
+    delete "/user", UserController, :delete
+  end
+
+  scope "/oauth", DndMatchmakerWeb do
+    pipe_through :api
+    post "/token", OAuthController, :authorize
   end
 end
