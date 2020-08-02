@@ -18,7 +18,7 @@ defmodule DndMatchmakerWeb.LoginnControllerTest do
     assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :missing_params}}
   end
 
-  describe "password grant" do
+  describe "login" do
     setup [:create_user]
 
     test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn, user: user} do
@@ -31,7 +31,7 @@ defmodule DndMatchmakerWeb.LoginnControllerTest do
       assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :no_username_or_pass_match}}
     end
 
-    test "authorize rendors bearer token when given valid user/pass", %{conn: conn, user: user} do
+    test "authorize rendors bearer token and sets cookie when given valid user/pass", %{conn: conn, user: user} do
       conn = post(conn, @login_endpoint, %{
         "grant_type" => "password",
         "username" => user.username,
@@ -41,6 +41,8 @@ defmodule DndMatchmakerWeb.LoginnControllerTest do
       assert {:ok, claims} = DndMatchmakerWeb.JWT.verify_and_validate(Jason.decode!(conn.resp_body)["authorization_token"])
       assert claims["sub"] == user.id
       assert claims["username"] == user.username
+      assert conn.resp_cookies["session-token"].value == Jason.decode!(conn.resp_body)["authorization_token"]
+      assert conn.resp_cookies["session-token"].http_only
     end
   end
 

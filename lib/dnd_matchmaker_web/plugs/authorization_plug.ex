@@ -12,19 +12,16 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlug do\
   def call(conn, _options) do
     case conn |> get_bearer_token() do
       {:ok, bearer_token} ->
-        case DndMatchmakerWeb.JWT.verify_and_validate(bearer_token) do
-          {:ok, %{"sub" => user_id}} -> put_private(conn, :user_id, user_id)
-          {:error, msg} ->
-            conn
-            |> put_resp_content_type("application/json")
-            |> send_resp(401, Jason.encode!(%{error: %{message: msg}}))
-            |> halt()
+        validate_token(conn, bearer_token)
+      {:error, :bearer_token_not_found} ->
+        conn = fetch_cookies(conn)
+        if conn.req_cookies["session-token"] do
+          validate_token(conn, conn.req_cookies["session-token"])
+        else
+          render_authorization_error(conn, :no_session_token_found)
         end
       {:error, msg} ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(400, Jason.encode!(%{error: %{message: msg}}))
-        |> halt()
+        render_authorization_error(conn, msg)
     end
   end
 
@@ -34,5 +31,23 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlug do\
       ["Basic " <> _]             -> {:error, :basic_auth_not_supported}
       _                           -> {:error, :bearer_token_not_found}
     end
+  end
+
+  defp validate_token(conn, token) do
+    case DndMatchmakerWeb.JWT.verify_and_validate(token) do
+      {:ok, %{"sub" => user_id}} -> put_private(conn, :user_id, user_id)
+      {:error, msg} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(401, Jason.encode!(%{error: %{message: msg}}))
+        |> halt()
+    end
+  end
+
+  defp render_authorization_error(conn, msg) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(400, Jason.encode!(%{error: %{message: msg}}))
+    |> halt()
   end
 end
