@@ -1,30 +1,28 @@
-defmodule DndMatchmakerWeb.OAuthControllerTest do
+defmodule DndMatchmakerWeb.LoginnControllerTest do
   use ExUnit.Case
 
   import Phoenix.ConnTest
 
   @endpoint DndMatchmakerWeb.Endpoint
 
-  @auth "/oauth/token"
+  @login_endpoint "/api/v1/login"
 
   setup do
     assert :ok = Ecto.Adapters.SQL.Sandbox.checkout(DndMatchmaker.Repo)
     %{conn: build_conn()}
   end
 
-  test "authorize renders bad_request when using unavailable grant_type", %{conn: conn} do
-    conn = post(conn, @auth, %{
-      "grant_type" => "not a grant type"
-    })
+  test "authorize renders bad_request when params not passed correctly", %{conn: conn} do
+    conn = post(conn, @login_endpoint, %{})
     assert conn.status == 400
-    assert conn.resp_body == Jason.encode! %{"error" => %{"message" => "invalid_grant_type"}}
+    assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :missing_params}}
   end
 
   describe "password grant" do
     setup [:create_user]
 
     test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn, user: user} do
-      conn = post(conn, @auth, %{
+      conn = post(conn, @login_endpoint, %{
         "grant_type" => "password",
         "username" => user.username,
         "password" => "not the password"
@@ -34,7 +32,7 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
     end
 
     test "authorize rendors bearer token when given valid user/pass", %{conn: conn, user: user} do
-      conn = post(conn, @auth, %{
+      conn = post(conn, @login_endpoint, %{
         "grant_type" => "password",
         "username" => user.username,
         "password" => "password"
