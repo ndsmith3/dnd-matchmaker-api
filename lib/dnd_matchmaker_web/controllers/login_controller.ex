@@ -1,15 +1,17 @@
-defmodule DndMatchmakerWeb.OAuthController do
+defmodule DndMatchmakerWeb.LoginController do
   use DndMatchmakerWeb, :controller
 
   action_fallback DndMatchmakerWeb.FallbackController
 
-  def authorize(conn, params) do
+  def login(conn, params) do
     with {:ok, token} <- params |> get_token do
-      conn |> render(%{token: token})
+      conn
+      |> put_resp_cookie("session_token", token, http_only: true)
+      |> render(%{token: token})
     end
   end
 
-  defp get_token(%{"grant_type" => "password", "username" => username, "password" => password}) do
+  defp get_token(%{"username" => username, "password" => password}) do
     with user <- DndMatchmaker.Accounts.get_user_by_username!(username) do
       if Bcrypt.verify_pass(password, user.password) do
         info = %{"sub" => user.id, "username" => user.username}
@@ -22,6 +24,6 @@ defmodule DndMatchmakerWeb.OAuthController do
   end
 
   defp get_token(_params) do
-    {:error, :bad_request, :invalid_grant_type}
+    {:error, :bad_request, :missing_params}
   end
 end

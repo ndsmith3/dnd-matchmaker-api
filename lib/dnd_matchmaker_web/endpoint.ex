@@ -40,5 +40,6 @@ defmodule DndMatchmakerWeb.Endpoint do
     key: "_dnd_matchmaker_key",
     signing_salt: "OX9njPv5"
 
+  plug CORSPlug
   plug DndMatchmakerWeb.Router
 end

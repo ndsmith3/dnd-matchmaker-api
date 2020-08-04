@@ -1,30 +1,28 @@
-defmodule DndMatchmakerWeb.OAuthControllerTest do
+defmodule DndMatchmakerWeb.LoginControllerTest do
   use ExUnit.Case
 
   import Phoenix.ConnTest
 
   @endpoint DndMatchmakerWeb.Endpoint
 
-  @auth "/oauth/token"
+  @login_endpoint "/api/v1/login"
 
   setup do
     assert :ok = Ecto.Adapters.SQL.Sandbox.checkout(DndMatchmaker.Repo)
     %{conn: build_conn()}
   end
 
-  test "authorize renders bad_request when using unavailable grant_type", %{conn: conn} do
-    conn = post(conn, @auth, %{
-      "grant_type" => "not a grant type"
-    })
+  test "authorize renders bad_request when params not passed correctly", %{conn: conn} do
+    conn = post(conn, @login_endpoint, %{})
     assert conn.status == 400
-    assert conn.resp_body == Jason.encode! %{"error" => %{"message" => "invalid_grant_type"}}
+    assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :missing_params}}
   end
 
-  describe "password grant" do
+  describe "login" do
     setup [:create_user]
 
     test "authorize rendors unauthorized when given unmatching user/pass", %{conn: conn, user: user} do
-      conn = post(conn, @auth, %{
+      conn = post(conn, @login_endpoint, %{
         "grant_type" => "password",
         "username" => user.username,
         "password" => "not the password"
@@ -33,8 +31,8 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
       assert conn.resp_body == Jason.encode! %{"error" => %{"message" => :no_username_or_pass_match}}
     end
 
-    test "authorize rendors bearer token when given valid user/pass", %{conn: conn, user: user} do
-      conn = post(conn, @auth, %{
+    test "authorize rendors bearer token and sets cookie when given valid user/pass", %{conn: conn, user: user} do
+      conn = post(conn, @login_endpoint, %{
         "grant_type" => "password",
         "username" => user.username,
         "password" => "password"
@@ -43,6 +41,8 @@ defmodule DndMatchmakerWeb.OAuthControllerTest do
       assert {:ok, claims} = DndMatchmakerWeb.JWT.verify_and_validate(Jason.decode!(conn.resp_body)["authorization_token"])
       assert claims["sub"] == user.id
       assert claims["username"] == user.username
+      assert conn.resp_cookies["session_token"].value == Jason.decode!(conn.resp_body)["authorization_token"]
+      assert conn.resp_cookies["session_token"].http_only
     end
   end
 
