@@ -15,8 +15,8 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlug do\
         validate_token(conn, bearer_token)
       {:error, :bearer_token_not_found} ->
         conn = fetch_cookies(conn)
-        if conn.req_cookies["session-token"] do
-          validate_token(conn, conn.req_cookies["session-token"])
+        if conn.req_cookies["session_token"] do
+          validate_token(conn, conn.req_cookies["session_token"])
         else
           render_authorization_error(conn, :no_session_token_found)
         end

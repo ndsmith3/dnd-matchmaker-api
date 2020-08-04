@@ -57,3 +57,5 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :joken, default_signer: "secret"
+
+config :cors_plug, origin: ["http://localhost:3000", "http://0.0.0.0:3000", "http://127.0.0.1:3000"]

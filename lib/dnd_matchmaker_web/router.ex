@@ -11,9 +11,11 @@ defmodule DndMatchmakerWeb.Router do
 
   scope "/api/v:version", DndMatchmakerWeb do
     pipe_through :api
+
     # Temporary endpoint for testing connectivity to front-end
     get    "/test",       TestController,  :show
     get    "/test/:data", TestController,  :reflect
+
     post   "/register",   UserController,  :register
     post   "/login",      LoginController, :login
   end
@@ -21,6 +23,8 @@ defmodule DndMatchmakerWeb.Router do
   scope "/api/v:version", DndMatchmakerWeb do
     pipe_through :api
     pipe_through :auth
+
+    post   "/logout", LogoutController, :logout
 
     get    "/user", UserController, :show
     put    "/user", UserController, :update

@@ -11,7 +11,6 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlugTest do
   test "should return error when no token is given", %{conn: conn} do
     conn =
       conn
-      |> fetch_cookies()
       |> DndMatchmakerWeb.Plugs.AuthorizationPlug.call([])
     assert conn.halted
     assert conn.status == 400
@@ -53,8 +52,7 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlugTest do
     test "should return error when cookie token is not a signed jwt", %{conn: conn} do
       conn =
         conn
-        |> put_req_header("cookie", "session-token=token;")
-        |> fetch_cookies()
+        |> put_req_header("cookie", "session_token=token;")
         |> DndMatchmakerWeb.Plugs.AuthorizationPlug.call([])
       assert conn.halted
       assert conn.status == 401
@@ -64,8 +62,7 @@ defmodule DndMatchmakerWeb.Plugs.AuthorizationPlugTest do
     test "should set :user_id when authorization header token is a signed jwt", %{conn: conn} do
       conn =
         conn
-        |> put_req_header("cookie", "session-token=" <> DndMatchmakerWeb.JWT.generate_and_sign!(%{"sub" => 1}) <> ";")
-        |> fetch_cookies()
+        |> put_req_header("cookie", "session_token=" <> DndMatchmakerWeb.JWT.generate_and_sign!(%{"sub" => 1}) <> ";")
         |> DndMatchmakerWeb.Plugs.AuthorizationPlug.call([])
       assert conn.private[:user_id] == 1
       assert !conn.halted

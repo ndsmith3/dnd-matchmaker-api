@@ -1,4 +1,4 @@
-defmodule DndMatchmakerWeb.LoginnControllerTest do
+defmodule DndMatchmakerWeb.LoginControllerTest do
   use ExUnit.Case
 
   import Phoenix.ConnTest
@@ -41,8 +41,8 @@ defmodule DndMatchmakerWeb.LoginnControllerTest do
       assert {:ok, claims} = DndMatchmakerWeb.JWT.verify_and_validate(Jason.decode!(conn.resp_body)["authorization_token"])
       assert claims["sub"] == user.id
       assert claims["username"] == user.username
-      assert conn.resp_cookies["session-token"].value == Jason.decode!(conn.resp_body)["authorization_token"]
-      assert conn.resp_cookies["session-token"].http_only
+      assert conn.resp_cookies["session_token"].value == Jason.decode!(conn.resp_body)["authorization_token"]
+      assert conn.resp_cookies["session_token"].http_only
     end
   end
 

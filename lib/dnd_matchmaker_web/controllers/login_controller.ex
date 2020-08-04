@@ -6,7 +6,7 @@ defmodule DndMatchmakerWeb.LoginController do
   def login(conn, params) do
     with {:ok, token} <- params |> get_token do
       conn
-      |> put_resp_cookie("session-token", token, http_only: true)
+      |> put_resp_cookie("session_token", token, http_only: true)
       |> render(%{token: token})
     end
   end

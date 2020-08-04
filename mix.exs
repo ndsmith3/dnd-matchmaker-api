@@ -44,7 +44,8 @@ defmodule DndMatchmaker.MixProject do
       {:cowboy, "< 2.8.0", override: true},
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:joken, "~> 2.0"},
-      {:bcrypt_elixir, "~> 2.0"}
+      {:bcrypt_elixir, "~> 2.0"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
